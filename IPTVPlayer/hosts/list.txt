@@ -173,7 +173,6 @@ hosttvgrypl
 hosttvjworg
 hosttvn24
 hosttvnowde
-hosttvnvod
 hosttvplayercom
 hosttvproart
 hosttvpvod
