@@ -613,6 +613,7 @@ class urlparser:
                        'supergoodtvlive.com':  self.pp.parserTXNEWSNETWORK  ,
                        'talbol.net':           self.pp.parserTXNEWSNETWORK  ,
                        'txnewsnetwork.net':    self.pp.parserTXNEWSNETWORK  ,
+                       'lookhd.xyz':           self.pp.parserTXNEWSNETWORK  ,
                     }
         return
     
