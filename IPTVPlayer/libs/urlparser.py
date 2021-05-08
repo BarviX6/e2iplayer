@@ -999,7 +999,7 @@ class urlparser:
                 tmp = self.cm.ph.getSearchGroups(data, """(rtmp://[^'^"]+?)['"]""")[0]
                 tmp = tmp.split('&amp;')
                 r = tmp[0]
-                if 1 < len(tmp)and tmp[1].startswith('c='):
+                if 1 < len(tmp) and tmp[1].startswith('c='):
                     playpath = tmp[1][2:]
                 else:
                     playpath = self.cm.ph.getSearchGroups(data, """['"]*url['"]*[ ]*?:[ ]*?['"]([^'^"]+?)['"]""")[0]
@@ -11261,7 +11261,7 @@ class pageParser(CaptchaHelper):
                 type = self.cm.ph.getSearchGroups(item, '''['"\{\,\s]type['"]?\s*:\s*['"]([^'^"]+?)['"]''')[0].lower()
                 if type != 'mp4': continue
                 url = self.cm.ph.getSearchGroups(item, '''['"\{\,\s]file['"]?\s*:\s*['"]([^'^"]+?)['"]''')[0]
-                if 'googleapis.com/drive' in url  and'/files/' in url:
+                if 'googleapis.com/drive' in url and '/files/' in url:
                     fileId = url.split('/files/', 1)[-1].split('?', 1)[0]
                     if fileId != '':
                         if fileId in googleDriveFiles: continue
