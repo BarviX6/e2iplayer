@@ -6640,23 +6640,15 @@ class pageParser(CaptchaHelper):
     def parserWEBCAMERAPL(self, baseUrl):
         printDBG("parserWEBCAMERAPL baseUrl[%s]" % baseUrl)
 
-        def _getFullUrl(url):
-            if url.startswith('//'):
-                url = 'http:' + url
-            return url
-
         sts, data = self.cm.getPage(baseUrl)
         if not sts: return False
 
-        playerUrl = self.cm.ph.getSearchGroups(data, """['"]([^'^"]+?webcamera\.[^'^"]+?/player/[^'^"]+?)['"]""")[0]
-        if playerUrl == '': playerUrl = self.cm.ph.getSearchGroups(data, """['"]([^'^"]+?player\.webcamera\.[^'^"]+?)['"]""")[0]
-        playerUrl = _getFullUrl(playerUrl)
-        if self.cm.isValidUrl(playerUrl):
-            sts, tmp = self.cm.getPage(playerUrl)
-            tmp = self.cm.ph.getSearchGroups(tmp, """var\sVIDEO_SRC\s=\s['"]([^'^"]+?)['"]""")[0]
-            if tmp != '':
-                tmp = codecs.decode(tmp, 'rot13').replace('\/', '/')
-                return getDirectM3U8Playlist(_getFullUrl(tmp), checkContent=True)
+        tmp = self.cm.ph.getSearchGroups(data, '''stream-player__video['"] data-src=['"]([^"^']+?)['"]''')[0]
+        if tmp == '':
+            tmp = self.cm.ph.getSearchGroups(data, '''STREAM_PLAYER_CONFIG[^}]+?['"]video_src['"]:['"]([^"^']+?)['"]''')[0].replace('\/', '/')
+        if tmp != '':
+            tmp = codecs.decode(tmp, 'rot13')
+            return getDirectM3U8Playlist(tmp, checkContent=True)
 
         return False
 
@@ -13063,6 +13055,8 @@ class pageParser(CaptchaHelper):
         sts, data = self.cm.getPage(baseUrl, urlParams)
         if not sts: return False
 
+        urlTab = []
+
         if "eval(function(p,a,c,k,e,d)" in data:
             printDBG( 'Host resolveUrl packed' )
             packed = re.compile('>eval\(function\(p,a,c,k,e,d\)(.+?)</script>', re.DOTALL).findall(data)
@@ -13086,12 +13080,11 @@ class pageParser(CaptchaHelper):
                 if 'http' in data: break
             data = data.splitlines()[0]
 
-        urlTab = []
-        url = strwithmeta(data, {'Origin':"https://" + urlparser.getDomain(baseUrl), 'Referer':baseUrl})
-        if 'm3u8' in url:
-            urlTab.extend(getDirectM3U8Playlist(url, checkExt=False, variantCheck=True, checkContent=True, sortWithMaxBitrate=99999999))
-        else:
-            urlTab.append({'name':'mp4', 'url':url})
+            url = strwithmeta(data, {'Origin': "https://" + urlparser.getDomain(baseUrl), 'Referer': baseUrl})
+            if 'm3u8' in url:
+                urlTab.extend(getDirectM3U8Playlist(url, checkExt=False, variantCheck=True, checkContent=True, sortWithMaxBitrate=99999999))
+            else:
+                urlTab.append({'name': 'mp4', 'url': url})
 
         return urlTab
 
